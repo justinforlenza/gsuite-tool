@@ -1,0 +1,16 @@
+{
+  "name": "gsuite_onboarding",
+  "version": "1.0.0",
+  "main": "main.js",
+  "repository": "git@github.com:justinforlenza/gsuite-onboarding.git",
+  "author": "Justin Forlenza",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "@trodi/electron-splashscreen": "^0.3.1",
+    "electron": "^2.0.8",
+    "xel": "^0.0.151"
+  }
+}
