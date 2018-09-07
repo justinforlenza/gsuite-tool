@@ -1,12 +1,21 @@
 # Created by .ignore support plugin (hsz.mobi)
 
+.DS_Store
+dist/electron/*
+dist/web/*
+build/*
+!build/icons
+node_modules/
+npm-debug.log
+npm-debug.log.*
+thumbs.db
+!.gitkeep
 # IntelliJ project files
 .idea
 *.iml
 out
 gen### macOS template
 # General
-.DS_Store
 .AppleDouble
 .LSOverride
 
