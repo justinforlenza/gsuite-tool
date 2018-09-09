@@ -22,7 +22,7 @@ function createWindow() {
         useContentSize: true,
         width: 800,
         resizable: false,
-        title: 'G-Suite On Boarding'
+        title: 'G-Suite Automation Tool'
     })
 
     mainWindow.loadURL(winURL)

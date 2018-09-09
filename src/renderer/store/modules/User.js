@@ -18,6 +18,13 @@ const mutations = {
         state.email = data.U3
         state.authenticated = true
     },
+    RESET_USER_DATA(state) {
+        state.firstName = null
+        state.lastName = null
+        state.picture = null
+        state.email = null
+        state.authenticated = false
+    },
     SET_ORG_NAME(state, name) {
         state.organization.name = name
     },
@@ -26,11 +33,7 @@ const mutations = {
     },
 }
 
-const actions = {
-    login(context){
-
-    }
-}
+const actions = {}
 
 export default {
     state,
