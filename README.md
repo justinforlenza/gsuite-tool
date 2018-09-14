@@ -1,6 +1,8 @@
-# gsuite-onboarding
+# G-Suite Automation Tool
 
-> Make your life of a G-Suite admin easier with this tool, that automates the creation of Gmail accounts, with some nifty features :)
+[![Build Status](https://travis-ci.com/justinforlenza/gsuite-onboarding.svg?branch=master)](https://travis-ci.com/justinforlenza/gsuite-onboarding)
+
+> Make your life of a G-Suite admin easier with this tool
 
 #### Build Setup
 

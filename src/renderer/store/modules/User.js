@@ -5,7 +5,8 @@ const state = {
     picture: null,
     organization: {
         name: null,
-        domains: []
+        domains: [],
+        users: []
     },
     authenticated: false
 }
@@ -31,6 +32,12 @@ const mutations = {
     ADD_ORG_DOMAIN(state, domain) {
         state.organization.domains.push(domain)
     },
+    RESET_ORG_USERS(state) {
+        state.organization.users = []
+    },
+    ADD_ORG_USER(state, user){
+        state.organization.users.push(user)
+    }
 }
 
 const actions = {}

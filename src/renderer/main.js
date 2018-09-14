@@ -8,7 +8,7 @@ import App from './App'
 import router from './router'
 import store from './store'
 
-
+import '@fortawesome/fontawesome-free/css/all.min.css'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -27,11 +27,16 @@ const apiConfig = {
     apiKey: 'AIzaSyB7t3jfa9cMsaBMWwDey3P8aHdAZledE64',
     clientId: '1035142319068-gj9j2728u4cmdn34ihmag1jffd5p27nd.apps.googleusercontent.com',
     discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/admin/directory_v1/rest'],
-    scope: 'https://www.googleapis.com/auth/admin.directory.user https://www.googleapis.com/auth/admin.directory.domain.readonly https://www.googleapis.com/auth/admin.directory.customer.readonly'
+    scope: 'https://www.googleapis.com/auth/admin.directory.user https://www.googleapis.com/auth/admin.directory.domain.readonly https://www.googleapis.com/auth/admin.directory.customer.readonly https://www.googleapis.com/auth/admin.directory.group https://www.googleapis.com/auth/admin.directory.orgunit'
 }
 
 
-Vue.use(Vuetify)
+Vue.use(Vuetify, {
+    iconfont: 'fa',
+    icons: {
+        'at': 'fas fa-at'
+    }
+})
 Vue.use(VueGAPI, apiConfig)
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
