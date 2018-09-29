@@ -8,7 +8,6 @@ import App from './App'
 import router from './router'
 import store from './store'
 
-import '@fortawesome/fontawesome-free/css/all.min.css'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
