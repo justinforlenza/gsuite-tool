@@ -9,7 +9,7 @@
         </v-card>
         <v-stepper v-model="currentStep" style="background-color: #424242!important;">
             <v-stepper-header class="">
-                <v-stepper-step step="1" :complete="currentStep > 1 && file != null" complete-icon="check"></v-stepper-step>
+                <v-stepper-step step="1" :complete="currentStep > 1" complete-icon="check"></v-stepper-step>
                 <v-divider></v-divider>
                 <v-stepper-step step="2" :complete="currentStep > 2" complete-icon="check"></v-stepper-step>
                 <v-divider></v-divider>
@@ -21,7 +21,7 @@
                 <v-stepper-content step="1">
                     <h6 class="title">Upload User Spreadsheet</h6>
                     <p>Upload a .csv file containing information on the users to create <br>
-                    <span class="caption">Required: First Name, Last Name <br> Optional: Email Address, Password, OU Path</span></p>
+                        <span class="caption">Required: First Name, Last Name <br> Optional: Email Address, Password, OU Path</span></p>
                     <v-layout row>
                         <v-flex xs6>
                             <v-file-upload v-model="file" v-on:change="fileUpload()"></v-file-upload>
@@ -62,7 +62,7 @@
                     <ou-selector v-model="userData.map.orgUnitPath"></ou-selector>
                     <v-layout row justify-end>
                         <v-flex xs3>
-                            <v-btn :disabled="step3Disabled" @click="generateUsers()" color="primary">Generate Data</v-btn>
+                            <v-btn :disabled="step3Disabled" @click="generateUsers()" color="primary" :loading="loading">Generate Data</v-btn>
                         </v-flex>
                     </v-layout>
                 </v-stepper-content>
@@ -70,7 +70,7 @@
                 <v-stepper-content step="3">
                     <v-layout row justify-end>
                         <v-flex xs3>
-                            <v-btn :disabled="step3Disabled" @click="generateUsers()" color="primary">Create Users</v-btn>
+                            <v-btn @click="createUsers()" color="primary" :loading="loading">Create Users</v-btn>
                         </v-flex>
                     </v-layout>
                     <h1>Users Generated:</h1>
@@ -91,12 +91,28 @@
                 </v-stepper-content>
 
                 <v-stepper-content step="4">
-                    <v-card color="grey lighten-1" class="mb-5" height="200px"></v-card>
-                    <v-btn color="primary" @click="currentStep = 5">Continue</v-btn>
-                </v-stepper-content>
-
-                <v-stepper-content step="5">
-                    <v-btn color="primary" @click="currentStep = 1">Do It Again</v-btn>
+                    <h3>You've successfully created {{userData.success}} user accounts</h3>
+                    <p>The following users failed:</p>
+                    <v-data-table :items="userData.failed" class="elevation-1" :dark="false" :light="true"
+                                  rows-per-page-text="" :rowsPerPageItems="[2]">
+                        <template slot="headers" slot-scope="props">
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Reason</th>
+                            </tr>
+                        </template>
+                        <template slot="items" slot-scope="props">
+                            <td>{{ props.item.user.name.givenName }} {{props.item.user.name.familyName}}</td>
+                            <td class="text-xs-right">{{ props.item.user.primaryEmail }}</td>
+                            <td class="text-xs-right">{{ props.item.reason }}</td>
+                        </template>
+                    </v-data-table>
+                    <v-layout row justify-end>
+                        <v-flex xs4>
+                            <v-btn color="primary" @click="currentStep = 1">Create More Users</v-btn>
+                        </v-flex>
+                    </v-layout>
                 </v-stepper-content>
             </v-stepper-items>
         </v-stepper>
@@ -108,7 +124,11 @@ String.prototype.toProperCase = function () {
     return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()})
 }
 
-// let
+Array.prototype.asyncForEach = async function (callback) {
+    for (let index = 0; index < this.length; index++) {
+        await callback(this[index], index, this)
+    }
+}
 
 import VFileUpload from './elements/v-file-upload'
 import Papa from 'papaparse'
@@ -137,19 +157,45 @@ export default {
                     template: null
                 }
             },
-            generated: []
+            generated: [],
+            success: 0,
+            failed: []
         },
-        dialog: false
+        dialog: false,
+        loading: false
     }),
     methods: {
         fileUpload(){
             let vm = this
+            this.userData = {
+                users: [],
+                    headers: [],
+                    map:{
+                    name: {
+                        familyName: String,
+                            givenName: String
+                    },
+                    password: String,
+                        first_password: null,
+                        changePasswordAtNextLogin: true,
+                        primaryEmail: String,
+                        orgUnitPath: '/',
+                        email_generation: {
+                        domain: null,
+                            template: null
+                    }
+                },
+                generated: [],
+                    success: 0,
+                    failed: []
+            }
             Papa.parse(this.file, {
                 header:true,
                 complete: function (results) {
                     vm.currentStep = 2
                     vm.userData.users = results.data
                     vm.userData.headers = results.meta.fields
+                    vm.file = null
                 }
             })
         },
@@ -173,42 +219,70 @@ export default {
             }
         },
         generateUsers(){
+            this.loading = true
             let vm = this
             let emails = []
             this.userData.users.forEach(element => {
                 let email
                 let password
-                if (vm.userData.map.primaryEmail === 'Generate Email'){
-                    if (vm.userData.map.email_generation.template === 'jane.doe'){
-                        email = element[vm.userData.map.name.givenName].toLowerCase().trim() + '.' + element[vm.userData.map.name.familyName].toLowerCase().trim()
-                        email = email.replace(' ', '-')
-                    } else if (vm.userData.map.email_generation.template === 'jdoe') {
-                        email = element[vm.userData.map.name.givenName].toLowerCase().trim().charAt(0) + element[vm.userData.map.name.familyName].toLowerCase().trim()
-                        email = email.replace(' ', '-')
+                if (element[vm.userData.map.name.givenName] && element[vm.userData.map.name.familyName]){
+                    if (vm.userData.map.primaryEmail === 'Generate Email'){
+                        if (vm.userData.map.email_generation.template === 'jane.doe'){
+                            email = element[vm.userData.map.name.givenName].toLowerCase().trim() + '.' + element[vm.userData.map.name.familyName].toLowerCase().trim()
+                            email = email.replace(' ', '-')
+                        } else if (vm.userData.map.email_generation.template === 'jdoe') {
+                            email = element[vm.userData.map.name.givenName].toLowerCase().trim().charAt(0) + element[vm.userData.map.name.familyName].toLowerCase().trim()
+                            email = email.replace(' ', '-')
+                        }
+                        email = vm.emailDupeCheck(emails, email, vm.userData.map.email_generation.domain)
+                        emails.push(email)
+                        email += '@' + vm.userData.map.email_generation.domain
+                    } else {
+                        email = element[vm.userData.map.primaryEmail]
                     }
-                    email = vm.emailDupeCheck(emails, email, vm.userData.map.email_generation.domain)
-                    emails.push(email)
-                    email += '@' + vm.userData.map.email_generation.domain
-                } else {
-                    email = element[vm.userData.map.primaryEmail]
+                    if (vm.userData.map.password === 'One Password'){
+                        password = vm.userData.map.first_password
+                    } else {
+                        password = element[vm.userData.map.password]
+                    }
+                    vm.userData.generated.push({
+                        name: {
+                            familyName: element[vm.userData.map.name.familyName].toProperCase().trim(),
+                            givenName: element[vm.userData.map.name.givenName].toProperCase().trim()
+                        },
+                        password: password,
+                        changePasswordAtNextLogin: vm.userData.map.changePasswordAtNextLogin,
+                        primaryEmail: email,
+                        orgUnitPath: vm.userData.map.orgUnitPath,
+                    })
                 }
-                if (vm.userData.map.password === 'One Password'){
-                    password = vm.userData.map.first_password
-                } else {
-                    password = element[vm.userData.map.password]
-                }
-                vm.userData.generated.push({
-                    name: {
-                        familyName: element[vm.userData.map.name.familyName].toProperCase().trim(),
-                        givenName: element[vm.userData.map.name.givenName].toProperCase().trim()
-                    },
-                    password: password,
-                    changePasswordAtNextLogin: vm.userData.map.changePasswordAtNextLogin,
-                    primaryEmail: email,
-                    orgUnitPath: vm.userData.map.orgUnitPath,
-                })
+
             })
             this.currentStep = 3
+            this.loading = false
+        },
+        createUsers(){
+            this.loading = true
+            let vm = this
+            this.$getGapiClient().then(gapi => {
+                vm.userData.generated.asyncForEach( async (user) => {
+                    await gapi.client.request({
+                        path: 'https://www.googleapis.com/admin/directory/v1/users',
+                        method: 'POST',
+                        body: user
+                    }).then(() => {
+                        vm.userData.success += 1
+                    }).catch(error => {
+                        vm.userData.failed.push({
+                            user: user,
+                            reason: error.result.error.message
+                        })
+                    })
+                }).then(() => {
+                    vm.loading = false
+                    vm.currentStep = 4
+                })
+            })
         }
     },
     computed:{
@@ -232,14 +306,3 @@ export default {
     }
 }
 </script>
-
-<style>
-.select2{
-    font-size: 18px !important;
-    font-family: 'Roboto', sans-serif;
-}
-.select2-results__options{
-    font-size:18px !important;
-    font-family: 'Roboto', sans-serif;
-}
-</style>

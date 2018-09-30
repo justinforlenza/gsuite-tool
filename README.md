@@ -1,6 +1,7 @@
 # G-Suite Automation Tool
 
-[![Build Status](https://travis-ci.com/justinforlenza/gsuite-onboarding.svg?branch=master)](https://travis-ci.com/justinforlenza/gsuite-onboarding)
+[![Build Status](https://travis-ci.com/justinforlenza/gsuite-tool.svg?branch=master)](https://travis-ci.com/justinforlenza/gsuite-tool) [![Build status](https://ci.appveyor.com/api/projects/status/np30wrca65xtjg39?svg=true)](https://ci.appveyor.com/project/justinforlenza/gsuite-tool)
+
 
 > Make your life of a G-Suite admin easier with this tool
 
@@ -8,13 +9,13 @@
 
 ``` bash
 # install dependencies
-npm install
+yarn install
 
 # serve with hot reload at localhost:9080
-npm run dev
+yarn run dev
 
 # build electron application for production
-npm run build
+yarn run build
 
 
 ```

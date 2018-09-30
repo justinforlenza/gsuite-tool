@@ -77,13 +77,13 @@ export default {
         open(link) {
             this.$electron.shell.openExternal(link)
         },
-        countUsers(users=[], nexttoken=null){
+        countUsers(users=[], nextPageToken=null){
             let vm = this
             let path = 'https://www.googleapis.com/admin/directory/v1/users?customer=my_customer'
-            if (nexttoken){
-                path += '&pageToken='+nexttoken
+            if (nextPageToken){
+                path += '&pageToken='+nextPageToken
             }
-            this.$getGapiClient().then(function () {
+            this.$getGapiClient().then(gapi => {
                 gapi.client.request({
                     path: path
                 }).then(response => {
@@ -91,11 +91,9 @@ export default {
                     if (response.result.nextPageToken) {
                         vm.countUsers(_users, response.result.nextPageToken)
                     } else {
-                        _users.forEach(user => {
-                            vm.$store.commit('ADD_ORG_USER', user)
-                        })
                         vm.userStats.total = _users.length
                         vm.userStats.never = _users.filter(function (element) {
+                            vm.$store.commit('ADD_ORG_USER', element)
                             return element.lastLoginTime === '1970-01-01T00:00:00.000Z'
                         }).length
                         vm.userStats.inactive = _users.filter(function (element) {
@@ -116,13 +114,13 @@ export default {
                 })
             })
         },
-        getGroups(nexttoken=null){
+        getGroups(nextPageToken=null){
             let vm = this
             let path = 'https://www.googleapis.com/admin/directory/v1/groups?customer=my_customer'
-            if (nexttoken){
-                path += '&pageToken='+nexttoken
+            if (nextPageToken){
+                path += '&pageToken='+nextPageToken
             }
-            this.$getGapiClient().then(function () {
+            this.$getGapiClient().then(gapi => {
                 gapi.client.request({
                     path: path
                 }).then(response => {

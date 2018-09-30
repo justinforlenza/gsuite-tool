@@ -29,9 +29,6 @@ function createWindow() {
 
     mainWindow.on('closed', () => {
         mainWindow = null
-        mainWindow.webContents.session.clearCache(function () {
-            console.log('cleared')
-        })
     })
 
 }
