@@ -53,3 +53,4 @@ deploy:
     - "build/gsuite-tool-*.dmg"
   on:
     tags: true
+    all_branches: true
