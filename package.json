@@ -17,7 +17,7 @@
     "postinstall": ""
   },
   "build": {
-    "productName": "gsuite-tool",
+    "productName": "G-Suite Tool",
     "appId": "nz.justinforle.gsuite-tool",
     "directories": {
       "output": "build"
