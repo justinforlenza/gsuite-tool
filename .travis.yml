@@ -34,8 +34,7 @@ script:
 - yarn run build
 branches:
   only:
-  - master
-  - /^v+\d+\.\d+\.\d+$/
+  - /.*/
 notifications:
   pushover:
     api_key:
