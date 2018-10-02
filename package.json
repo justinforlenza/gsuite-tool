@@ -1,6 +1,6 @@
 {
   "name": "gsuite-tool",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "Justin Forlenza",
   "description": "Automation of G-Suite Tasks",
   "license": "MIT",
