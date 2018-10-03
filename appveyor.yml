@@ -8,6 +8,21 @@ image: Visual Studio 2017
 platform:
   - x64
 
+artifacts:
+  - path: '.\build\G-Suite Tool Setup *.exe'
+    name: G-Suite Tool Setup $(appveyor_repo_tag_name).exe
+
+deploy:
+  - provider: GitHub
+    release: $(appveyor_repo_tag_name)
+    artifact:  win-release.zip    #this should be the same as a path in artifact
+    draft: true
+    prerelease: true
+    auth_token:
+      secure: plxuSU39QZX5LXsgEFU43zakkpudQ0/mLt0at+GmwW//la6vbXEvuGssWAGnWrW5
+    on:
+      appveyor_repo_tag: true
+
 cache:
   - node_modules
   - '%APPDATA%\npm-cache'

@@ -35,8 +35,6 @@ script:
 branches:
   only:
   - /.*/
-  except:
-  - master
 notifications:
   pushover:
     api_key:
