@@ -10,7 +10,6 @@ platform:
 
 artifacts:
   - path: '.\build\G-Suite Tool Setup *.exe'
-    name: G-Suite Tool Setup $(appveyor_repo_tag_name).exe
 
 deploy:
   - provider: GitHub
