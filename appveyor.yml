@@ -6,11 +6,12 @@ platform:
 
 artifacts:
   - path: '.\build\G-Suite Tool Setup *.exe'
+    name: G-Suite Tool Setup.exe
 
 deploy:
   - provider: GitHub
     release: $(appveyor_repo_tag_name)
-    artifact:  '.\build\G-Suite Tool Setup *.exe'
+    artifact:  G-Suite Tool Setup.exe
     draft: true
     prerelease: true
     auth_token:
