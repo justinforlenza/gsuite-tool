@@ -1,8 +1,4 @@
-version: 0.1.{build}
-
-branches:
-  only:
-    - master
+version: '#'{build}
 
 image: Visual Studio 2017
 platform:
@@ -14,7 +10,7 @@ artifacts:
 deploy:
   - provider: GitHub
     release: $(appveyor_repo_tag_name)
-    artifact:  win-release.zip    #this should be the same as a path in artifact
+    artifact:  '.\build\G-Suite Tool Setup *.exe'
     draft: true
     prerelease: true
     auth_token:
